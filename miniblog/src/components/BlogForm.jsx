@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 const BlogForm = ({ onSave, isEditing, editId, posts }) => {
     const [id, setId] = useState('');
     const [author, setAuthor] = useState('');
@@ -40,7 +41,14 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
         }
 
         if (Object.keys(errors).length === 0) {
-            onSave({ id, author, description, imageUrl });
+            // Save post data to local storage
+            const newPost = { id, author, description, imageUrl };
+            localStorage.setItem(id, JSON.stringify(newPost));
+
+            // Pass post data to onSave function
+            onSave(newPost);
+
+            // Clear form fields
             setId('');
             setAuthor('');
             setDescription('');
@@ -77,4 +85,3 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
 };
 
 export default BlogForm;
-

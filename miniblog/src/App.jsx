@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import BlogForm from './components/BlogForm';
 import BlogList from './components/BlogList';
 
 function App() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(() => {
+    // Initialize posts from local storage or an empty array if no data is found
+    const storedPosts = localStorage.getItem('posts');
+    return storedPosts ? JSON.parse(storedPosts) : [];
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
+  useEffect(() => {
+    // Update local storage whenever posts state changes
+    localStorage.setItem('posts', JSON.stringify(posts));
+  }, [posts]);
+
   const handleSavePost = (newPost) => {
     if (isEditing) {
-      const updatedPosts = posts.map((post) => (post.id === editId ? newPost : post));
+      const updatedPosts = posts.map((post) => (post.id === editId ? { ...newPost, date: post.date } : post));
       setPosts(updatedPosts);
       setIsEditing(false);
       setEditId(null);
