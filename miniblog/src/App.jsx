@@ -1,5 +1,3 @@
-// App.js
-
 import React, { useState } from 'react';
 import './App.css';
 import BlogForm from './components/BlogForm';
@@ -24,7 +22,10 @@ function App() {
   };
 
   const handleDeletePost = (postId) => {
-    setPosts(posts.filter((post) => post.id !== postId));
+    const isConfirmed = window.confirm('Are you sure you want to delete this post?');
+    if (isConfirmed) {
+      setPosts(posts.filter((post) => post.id !== postId));
+    }
   };
 
   const handleEditPost = (postId) => {
