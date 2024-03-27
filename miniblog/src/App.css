@@ -1,22 +1,32 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
+  margin: 15px;
   padding: 0;
+  background: linear-gradient(
+    90deg,
+    rgb(74, 69, 105) 0%,
+    rgba(8, 221, 221, 0.589) 35%,
+    rgb(4, 60, 69) 100%
+  );
 }
 
 .container {
-  max-width: 1200px; /* Increased max-width */
   margin: 20px auto;
-  padding: 0 20px; /* Added padding on both sides */
+  padding: 0 20px;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 30px;
 }
+h2 {
+  padding: inherit;
+}
 
 .blog-form {
-  background-color: #fff;
+  margin-top: 10px;
+  display: ruby-text;
+  background-color: ghostwhite;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -25,10 +35,11 @@ h1 {
 
 .input-group {
   margin-bottom: 15px;
+  display: contents;
 }
 
 .input-group input {
-  width: 100%;
+  display: inline-block;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -88,7 +99,9 @@ h1 {
 }
 
 .search-bar {
-  margin-bottom: 20px;
+  border-radius: 15px;
+  background-color: ghostwhite;
+  display: ruby-text;
 }
 
 .search-bar input {
