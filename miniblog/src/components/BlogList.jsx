@@ -9,7 +9,7 @@ const BlogList = ({ posts, onDelete, onEdit, onDuplicate }) => {
                     <h3>{post.title}</h3>
                     <p>Author: {post.author}</p>
                     <p>Description: {post.description}</p>
-                    <p>Date: {post.date}</p>
+                    <p>Date: {new Date().toLocaleDateString()}</p> {/* Display current date */}
                     <img src={post.imageUrl} alt={post.title} />
                     <div className="button-group">
                         <button onClick={() => onDelete(post.id)}>Delete</button>

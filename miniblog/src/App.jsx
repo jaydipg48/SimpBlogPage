@@ -5,25 +5,26 @@ import BlogList from './components/BlogList';
 import SearchBar from './components/SearchBar';
 
 function App() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(() => {
+    const storedPosts = localStorage.getItem('posts');
+    return storedPosts ? JSON.parse(storedPosts) : [];
+  });
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [editedPost, setEditedPost] = useState(null);
 
   useEffect(() => {
-    // Fetch or load posts from local storage or an API
-    const savedPosts = localStorage.getItem('posts');
-    if (savedPosts) {
-      setPosts(JSON.parse(savedPosts));
-    }
-  }, []);
+    localStorage.setItem('posts', JSON.stringify(posts));
+  }, [posts]);
 
   const handleSavePost = (newPost) => {
     if (isEditing) {
-      const updatedPosts = posts.map(post => (post.id === editId ? newPost : post));
+      const updatedPosts = posts.map(post => (post.id === editId ? { ...post, ...newPost } : post));
       setPosts(updatedPosts);
       setIsEditing(false);
       setEditId(null);
+      setEditedPost(null);
     } else {
       const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const existingIds = posts.map(post => parseInt(post.id.slice(-4), 10));
@@ -44,6 +45,8 @@ function App() {
   const handleEditPost = (postId) => {
     setIsEditing(true);
     setEditId(postId);
+    const postToEdit = posts.find(post => post.id === postId);
+    setEditedPost(postToEdit);
   };
 
   const handleDuplicatePost = (postToDuplicate) => {
@@ -65,7 +68,7 @@ function App() {
     <div className="App">
       <h1>Simple Blog App</h1>
       <SearchBar onSearch={handleSearch} />
-      <BlogForm onSave={handleSavePost} isEditing={isEditing} editId={editId} posts={posts} />
+      <BlogForm onSave={handleSavePost} isEditing={isEditing} editId={editId} editedPost={editedPost} />
       <BlogList
         posts={filteredPosts.length > 0 ? filteredPosts : posts}
         onDelete={handleDeletePost}
