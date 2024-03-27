@@ -12,7 +12,6 @@ function App() {
 
   useEffect(() => {
     // Fetch or load posts from local storage or an API
-    // For example, you can load posts from localStorage:
     const savedPosts = localStorage.getItem('posts');
     if (savedPosts) {
       setPosts(JSON.parse(savedPosts));
@@ -26,9 +25,11 @@ function App() {
       setIsEditing(false);
       setEditId(null);
     } else {
-      const id = Date.now().toString();
-      const date = new Date().toLocaleDateString();
-      setPosts([...posts, { ...newPost, id, date }]);
+      const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const existingIds = posts.map(post => parseInt(post.id.slice(-4), 10));
+      const maxId = Math.max(...existingIds, 0);
+      const newId = `${currentDate}-${("0000" + (maxId + 1)).slice(-4)}`;
+      setPosts([...posts, { ...newPost, id: newId }]);
     }
   };
 
@@ -45,12 +46,12 @@ function App() {
     setEditId(postId);
   };
 
-  const handleDuplicatePost = (postId) => {
-    const postToDuplicate = posts.find(post => post.id === postId);
-    if (postToDuplicate) {
-      const newPost = { ...postToDuplicate, id: generateUniqueId() };
-      setPosts(prevPosts => [...prevPosts, newPost]);
-    }
+  const handleDuplicatePost = (postToDuplicate) => {
+    const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const existingIds = posts.map(post => parseInt(post.id.slice(-4), 10));
+    const maxId = Math.max(...existingIds, 0);
+    const newId = `${currentDate}-${("0000" + (maxId + 1)).slice(-4)}`;
+    setPosts([...posts, { ...postToDuplicate, id: newId }]);
   };
 
   const handleSearch = (query, field) => {
@@ -65,25 +66,14 @@ function App() {
       <h1>Simple Blog App</h1>
       <SearchBar onSearch={handleSearch} />
       <BlogForm onSave={handleSavePost} isEditing={isEditing} editId={editId} posts={posts} />
-      <BlogList posts={filteredPosts.length > 0 ? filteredPosts : posts} onDelete={handleDeletePost} onEdit={handleEditPost} onDuplicate={handleDuplicatePost} />
+      <BlogList
+        posts={filteredPosts.length > 0 ? filteredPosts : posts}
+        onDelete={handleDeletePost}
+        onEdit={handleEditPost}
+        onDuplicate={handleDuplicatePost}
+      />
     </div>
   );
 }
 
 export default App;
-
-// Function to generate a unique ID based on the current date and time
-const generateUniqueId = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-  return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
-};
-
-
-

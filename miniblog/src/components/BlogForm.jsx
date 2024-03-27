@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 
-const BlogForm = ({ onSave, isEditing, editId }) => {
+const BlogForm = ({ onSave, isEditing, editId, posts }) => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [errors, setErrors] = useState({});
 
-    const checkImageValidity = async (url) => {
-        try {
-            const response = await fetch(url);
-            const contentType = response.headers.get('content-type');
-            return contentType && contentType.startsWith('image');
-        } catch (error) {
-            console.error('Error checking image validity:', error);
-            return false;
-        }
+    const getNextId = () => {
+        const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const existingIds = posts.map(post => parseInt(post.id.slice(-4), 10));
+        const maxId = Math.max(...existingIds, 0);
+        const nextId = maxId + 1;
+        const paddedNextId = String(nextId).padStart(4, '0');
+        return `${currentDate}-${paddedNextId}`;
     };
 
     const handleSubmit = async (e) => {
@@ -32,20 +30,14 @@ const BlogForm = ({ onSave, isEditing, editId }) => {
         }
         if (!description.trim()) {
             errors.description = 'Description is required';
-        } else if (description.length < 25) {
-            errors.description = 'Description must be at least 25 characters';
         }
         if (!imageUrl.trim()) {
             errors.imageUrl = 'Image URL is required';
-        } else {
-            const isValidImageUrl = await checkImageValidity(imageUrl);
-            if (!isValidImageUrl) {
-                errors.imageUrl = 'Invalid image URL';
-            }
         }
 
         if (Object.keys(errors).length === 0) {
-            onSave({ title, author, description, imageUrl });
+            const id = getNextId();
+            onSave({ id, title, author, description, imageUrl });
             setTitle('');
             setAuthor('');
             setDescription('');
