@@ -66,7 +66,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Simple Blog App</h1>
+      <h1>SimpBlog App</h1>
       <SearchBar onSearch={handleSearch} />
       <BlogForm onSave={handleSavePost} isEditing={isEditing} editId={editId} editedPost={editedPost} />
       <BlogList
