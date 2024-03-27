@@ -1,63 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const BlogForm = ({ onSave, isEditing, editId, posts }) => {
-    const [id, setId] = useState('');
+const BlogForm = ({ onSave, isEditing, editId }) => {
+    const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [errors, setErrors] = useState({});
-
-    useEffect(() => {
-        if (isEditing && editId) {
-            const postToEdit = posts.find((post) => post.id === editId);
-            if (postToEdit) {
-                setId(postToEdit.id);
-                setAuthor(postToEdit.author);
-                setDescription(postToEdit.description);
-                setImageUrl(postToEdit.imageUrl);
-            }
-        } else {
-            // Generate a unique ID based on the current date
-            const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            const existingIds = posts.map(post => parseInt(post.id.slice(8), 10));
-            const maxId = Math.max(...existingIds, 0);
-            const newId = `${currentDate}${maxId + 1}`;
-            setId(newId);
-        }
-    }, [isEditing, editId, posts]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const errors = {};
-        if (!author.trim()) {
-            errors.author = 'Name is required';
-        } else if (!/^[a-zA-Z\s]+$/.test(author)) {
-            errors.author = 'Name must contain only letters';
-        }
-        if (!description.trim()) {
-            errors.description = 'Description is required';
-        }
-        if (!imageUrl.trim()) {
-            errors.imageUrl = 'Image URL is required';
-        } else {
-            // Check if the image URL points to a valid image file
-            const isValidImage = await checkImageValidity(imageUrl);
-            if (!isValidImage) {
-                errors.imageUrl = 'Invalid image URL';
-            }
-        }
-
-        if (Object.keys(errors).length === 0) {
-            onSave({ id, author, description, imageUrl });
-            setAuthor('');
-            setDescription('');
-            setImageUrl('');
-            setErrors({});
-        } else {
-            setErrors(errors);
-        }
-    };
 
     const checkImageValidity = async (url) => {
         try {
@@ -70,11 +18,52 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
         }
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const errors = {};
+        if (!title.trim()) {
+            errors.title = 'Title is required';
+        }
+        if (!author.trim()) {
+            errors.author = 'Author is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(author)) {
+            errors.author = 'Author must contain only letters';
+        }
+        if (!description.trim()) {
+            errors.description = 'Description is required';
+        } else if (description.length < 25) {
+            errors.description = 'Description must be at least 25 characters';
+        }
+        if (!imageUrl.trim()) {
+            errors.imageUrl = 'Image URL is required';
+        } else {
+            const isValidImageUrl = await checkImageValidity(imageUrl);
+            if (!isValidImageUrl) {
+                errors.imageUrl = 'Invalid image URL';
+            }
+        }
+
+        if (Object.keys(errors).length === 0) {
+            onSave({ title, author, description, imageUrl });
+            setTitle('');
+            setAuthor('');
+            setDescription('');
+            setImageUrl('');
+            setErrors({});
+        } else {
+            setErrors(errors);
+        }
+    };
+
     return (
         <div className="blog-form">
             <h2>{isEditing ? 'Edit Post' : 'Add New Post'}</h2>
             <form onSubmit={handleSubmit}>
-                {/* Input fields for author, description, and image URL */}
+                <div className="input-group">
+                    <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    {errors.title && <span className="error">{errors.title}</span>}
+                </div>
                 <div className="input-group">
                     <input type="text" placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} />
                     {errors.author && <span className="error">{errors.author}</span>}
@@ -94,5 +83,3 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
 };
 
 export default BlogForm;
-
-
