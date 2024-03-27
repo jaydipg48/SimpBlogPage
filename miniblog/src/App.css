@@ -25,7 +25,8 @@ h2 {
 
 .blog-form {
   margin-top: 10px;
-  display: ruby-text;
+  display: flex;
+  justify-content: center;
   background-color: ghostwhite;
   padding: 20px;
   border-radius: 10px;
