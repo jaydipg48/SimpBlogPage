@@ -16,6 +16,13 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
                 setDescription(postToEdit.description);
                 setImageUrl(postToEdit.imageUrl);
             }
+        } else {
+            // Generate a unique ID based on the current date
+            const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const existingIds = posts.map(post => parseInt(post.id.slice(8), 10));
+            const maxId = Math.max(...existingIds, 0);
+            const newId = `${currentDate}${maxId + 1}`;
+            setId(newId);
         }
     }, [isEditing, editId, posts]);
 
@@ -23,11 +30,6 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
         e.preventDefault();
 
         const errors = {};
-        if (!id.trim()) {
-            errors.id = 'ID is required';
-        } else if (!/^\d+$/.test(id)) {
-            errors.id = 'ID must contain only digits';
-        }
         if (!author.trim()) {
             errors.author = 'Name is required';
         } else if (!/^[a-zA-Z\s]+$/.test(author)) {
@@ -48,7 +50,6 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
 
         if (Object.keys(errors).length === 0) {
             onSave({ id, author, description, imageUrl });
-            setId('');
             setAuthor('');
             setDescription('');
             setImageUrl('');
@@ -73,10 +74,7 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
         <div className="blog-form">
             <h2>{isEditing ? 'Edit Post' : 'Add New Post'}</h2>
             <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <input type="text" placeholder="ID" value={id} onChange={(e) => setId(e.target.value)} />
-                    {errors.id && <span className="error">{errors.id}</span>}
-                </div>
+                {/* Input fields for author, description, and image URL */}
                 <div className="input-group">
                     <input type="text" placeholder="Author" value={author} onChange={(e) => setAuthor(e.target.value)} />
                     {errors.author && <span className="error">{errors.author}</span>}
@@ -96,3 +94,5 @@ const BlogForm = ({ onSave, isEditing, editId, posts }) => {
 };
 
 export default BlogForm;
+
+
